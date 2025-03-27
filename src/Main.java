@@ -5,13 +5,22 @@ public class Main {
 
         Scanner scn = new Scanner(System.in);
 
-        System.out.println("Olá, informe o seu nome");
-        String name = scn.nextLine();
+        System.out.println("Quanto é 2 + 2 ?");
+        int result = scn.nextInt();
 
-        System.out.println("Informe sua idade");
-        int idade = scn.nextInt();
+        boolean isRight;
 
-        System.out.printf("Olá %s sua idade é %d \n", name, idade);
+        if(isRight = result == 4) {
+
+            String report = "Sim";
+            System.out.printf("O resultado é %d \n", result);
+            System.out.printf("Você acertou? (%s)", report);
+        } else {
+
+            String report = "Não";
+            System.out.printf("O resultado é %d \n", 4);
+            System.out.printf("Você acertou? (%s)", report);
+        }
 
         scn.close();
     }

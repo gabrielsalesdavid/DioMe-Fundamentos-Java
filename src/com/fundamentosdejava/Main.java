@@ -1,3 +1,5 @@
+package com.fundamentosdejava;
+
 import java.util.Scanner;
 
 public class Main {

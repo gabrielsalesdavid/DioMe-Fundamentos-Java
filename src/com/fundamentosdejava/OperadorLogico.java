@@ -15,7 +15,7 @@ public class OperadorLogico {
         System.out.println("Você é emancipado?");
         boolean isEmancipated = scn.nextBoolean();
 
-        boolean canDrive = age >= 18 || isEmancipated && age >= 16;
+        boolean canDrive = age >= 18 || (isEmancipated && age >= 16);
 
         System.out.printf("Você pode dirigir? (%b) \n", canDrive);
 

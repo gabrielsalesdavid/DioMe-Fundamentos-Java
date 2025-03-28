@@ -13,7 +13,7 @@ public class IfElseIf {
         System.out.println("Informe seu idade:");
         int age = scn.nextInt();
 
-        System.out.println("Você é emancipado? (s/n)");
+        System.out.println("Você é emancipado(a)? (s/n)");
         var isEmancipated = scn.next().equalsIgnoreCase("s");
 
         if(age >= 18) {
@@ -21,7 +21,7 @@ public class IfElseIf {
             System.out.printf("%s, você tem %d anos e pode dirigir \n", name, age);
         } else if(age >= 16 && isEmancipated) {
 
-            System.out.printf("%s, apesar de você ter %d anos, você é emancipada e pode dirigir \n", name, age);
+            System.out.printf("%s, apesar de você ter %d anos, você é emancipado(a) e pode dirigir \n", name, age);
         } else {
 
             System.out.printf("%s, você não pode dirigir \n", name);

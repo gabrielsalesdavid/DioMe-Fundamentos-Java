@@ -8,18 +8,16 @@ public class WhileDoWhile {
 
         Scanner scn = new Scanner(System.in);
 
-        String name = "";
+        String name = "exit";
 
-        while(true) {
+        do {
 
             System.out.println("Informe um nome");
             name = scn.next();
 
             System.out.println(name);
 
-            if(name.equalsIgnoreCase("exit")) break;
-
-        }
+        } while(!name.equalsIgnoreCase("exit"));
 
         scn.close();
     }

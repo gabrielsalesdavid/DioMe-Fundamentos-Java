@@ -12,4 +12,8 @@ import lombok.Setter;
 public non-sealed class Salesman extends Employee {
 
     private double percentPerSold;
+    private double soldAmount;
+
+    public void getSoldAmount(int i) {
+    }
 }

@@ -1,4 +1,4 @@
-package com.exercicos;
+package com.exercicos.domain;
 
 public class Pet {
 

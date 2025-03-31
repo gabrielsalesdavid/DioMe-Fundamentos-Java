@@ -1,5 +1,8 @@
 package com.exercicos;
 
+import com.exercicos.domain.Pet;
+import com.exercicos.domain.PetMachine;
+
 import java.util.Scanner;
 
 public class Exercico03 {

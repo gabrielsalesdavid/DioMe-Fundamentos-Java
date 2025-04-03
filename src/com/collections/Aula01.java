@@ -7,14 +7,27 @@ public class Aula01 {
 
     public static void main(String[] args) {
 
-        int[] codes = {741, 852};
+        List<User> users = new ArrayList<>();
+        User user = new User(1, "João");
+        users.add(user);
+        users.add(new User(2, "Maria"));
+        users.add(new User(3, "Leo"));
+        System.out.println(users.contains(user));
+        System.out.println(users.size());
+        System.out.println(users.isEmpty());
+        System.out.println(users.getFirst());
+        System.out.println(users.get(0));
+        System.out.println(users.getLast());
+        System.out.println(users.size() - 1);
+        System.out.println(users.contains(new User(6, "Carlos")));
+        System.out.println(new User(4, "Roberto"));
+        System.out.println(new User(5, "Izaac"));
+        System.out.println(new User(1, "Jão").equals(new User(1, "Jão")));
 
-        System.out.println(codes.length);
-        List<Integer> codes01 = new ArrayList<>();
-        codes01.add(codes[0]);
-        codes01.add(codes[1]);
-        codes01.forEach(System.out::println);
-        codes01.add(74988);
-        codes01.forEach(System.out::println);
+        System.out.print(user);
+        System.out.println(users.remove(new User(10, "Leo")));
+        System.out.println(users.remove(0));
+        users.clear();
+        System.out.println(users);
     }
 }

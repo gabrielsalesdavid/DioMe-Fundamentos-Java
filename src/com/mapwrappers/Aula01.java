@@ -27,7 +27,7 @@ public class Aula01 {
 
         System.out.println(user.containsValue(new User("Marcos", 40)));
         System.out.println(user.getOrDefault(" ", new User(" ", -1)));
-        user.merge("", new User("", -1),(user, user2) ->{
+        user.merge("", new User("", -1),(user1, user2) ->{
 
             System.out.println(user);
             System.out.println(user2);

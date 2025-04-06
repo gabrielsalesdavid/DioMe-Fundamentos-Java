@@ -9,11 +9,11 @@ public class Aula02 {
         System.out.println("'" + user + "'");
     }
 
-    private static void printValue(final User user) {
+    private static void printValue(User user1) {
 
-        user.setName("Maria");
-        user.setAge(33);
-        user = new User("Maria", 33);
-        System.out.println(user);
+        user1.setName("Maria");
+        user1.setAge(33);
+        User user01 = new User("Maria", 33);
+        System.out.println(user1);
     }
 }

@@ -1,4 +1,4 @@
 package com.mapwrappers;
 
-public record User(String nema, int age) {
+public record User(String name, int age) {
 }

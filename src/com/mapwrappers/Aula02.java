@@ -4,12 +4,12 @@ public class Aula02 {
 
     public static void main(String[] args) {
 
-        User user = new User("Jão", 20);
+        Users user = new Users("Jão", 20);
         printValue(user);
         System.out.println("'" + user + "'");
     }
 
-    private static void printValue(User user1) {
+    private static void printValue(Users user1) {
 
         user1.setName("Maria");
         user1.setAge(33);

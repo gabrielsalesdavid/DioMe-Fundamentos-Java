@@ -1,5 +1,7 @@
 package com.tratamentoexcecoes;
 
+import java.time.LocalDate;
+
 import com.tratamentoexcecoes.dao.UserDAO;
 import com.tratamentoexcecoes.enums.MenuOption;
 import com.tratamentoexcecoes.model.UserMODEL;
@@ -9,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
-public class Aula01 {
+public class Main {
 
     private final static UserDAO dao = new UserDAO();
 
@@ -36,25 +38,41 @@ public class Aula01 {
             System.out.println("5 - Listar");
             System.out.println("6 - Sair");
 
-            MenuOption optionMenu = MenuOption.values()[selectedOption -1];
-            switch(optionMenu) {
+            MenuOption optionMenu = MenuOption.values()[selectedOption - 1];
+            switch (optionMenu) {
                 case SAVE -> {
                     UserMODEL user = dao.save(requestToSave());
                     System.out.printf("Usuario cadastrado \n%s!", user);
                 }
                 case UPDATE -> {
-                    UserMODEL update = dao.update(requestToUpdate());
-                    System.out.printf("Usuario atualizado \n%s!", update);
-                }
-                case DELETE -> {
-                    dao.delete(requestId());
-                    System.out.println("Usuario deletado!");
+                    try {
+                        UserMODEL update = dao.update(requestToUpdate());
+                        System.out.printf("Usuario atualizado \n%s!", update);
+
+                    } catch (UserNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                
+        
+            case DELETE -> {
+                    try{
+                        dao.delete(requestId());
+                        System.out.println("Usuario deletado!");
+                    } catch (UserNotFoundException | EmptyStorageException ex) {
+                        System.out.println(ex.getMessage());
+                    }
                 }
                 case FIND_BY_ID -> {
-                    long id = requestId();
-                    UserMODEL users = dao.findById(id);
-                    System.out.printf("Usuario com id: \n%s", id);
-                    System.out.println(users);
+
+                    try {
+                        var id = requestId();
+                        UserMODEL users = dao.findById(id);
+                        System.out.printf("Usuario com id: \n%s", id);
+                        System.out.println(users);
+                    } catch (UserNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
                 case FIND_ALL -> {
                     List<UserMODEL> users = dao.findAll();
@@ -65,6 +83,7 @@ public class Aula01 {
             }
         }
     }
+    
 
     private static long requestId() {
 
@@ -84,7 +103,14 @@ public class Aula01 {
         String birthDay = scn.next();
         DateTimeFormatter datatimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         var birth = OffsetDateTime.parse(birthDay, datatimeFormat);
-        return new UserMODEL(0, email, email, birth);
+        return validateInputs(id, name, email, birth);
+    }
+
+    public static UserMODEL validateInputs(final long id, final String name, final String email, final LocalDate bisthday) {
+
+        UserMODEL user = new UserMODEL(id, name, email, bisthday);
+        UserValidator.VerifyModel(user);
+        return user;
     }
 
     private static UserMODEL requestToUpdate() {

@@ -44,6 +44,21 @@ public class UserDAO {
 
     public List<UserMODEL> findAll() {
 
-        return userModel;
+        List<UserMODEL> result = null;
+        try {
+            verifyEmptyStorage();
+            result = userModel;
+        } catch (UserNotFoundException e) {
+            System.out.println(e.getMessage());
+            result = new ArrayList<>();
+        }
+        return result;
+    }
+
+    private void verifyEmptyStorage() {
+
+        if (userModel.isEmpty()) {
+            throw new UserNotFoundException("Nenhum usuario cadastrado!");
+        }
     }
 }

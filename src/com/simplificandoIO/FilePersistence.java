@@ -1,6 +1,10 @@
-package com.SimplificandoIO;
+package com.simplificandoio; // Tudo em minúsculo
 
-public interface IFilePersistence {
+/**
+ * Interface para persistência de dados em arquivos. Note que removi o "I" do
+ * nome, seguindo o padrão Java.
+ */
+public interface FilePersistence {
 
     String write(final String data);
 

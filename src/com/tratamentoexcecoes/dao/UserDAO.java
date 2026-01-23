@@ -1,64 +1,56 @@
 package com.tratamentoexcecoes.dao;
 
 import com.tratamentoexcecoes.exception.UserNotFoundException;
-import com.tratamentoexcecoes.model.UserMODEL;
+import com.tratamentoexcecoes.model.UserModel; // Ajustado de UserMODEL para UserModel
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class UserDAO {
 
-    private long nextId = 1l;
-    private List<UserMODEL> userModel = new ArrayList<>();
+    private long nextId = 1L; // Uso do L maiúsculo
+    private final List<UserModel> users = new ArrayList<>(); // Nome no plural e final
 
-    public final UserMODEL save(final UserMODEL modelUser) {
-
-        modelUser.setId(nextId++);
-        userModel.add(modelUser);
-        return modelUser;
+    public final UserModel save(final UserModel user) {
+        user.setId(nextId++);
+        users.add(user);
+        return user;
     }
 
-    public UserMODEL update(final UserMODEL updateUserModel) {
+    public UserModel update(final UserModel updateUser) {
+        // findById já lança exceção se não encontrar
+        UserModel existingUser = findById(updateUser.getId());
 
-        UserMODEL toUpdate = findById(updateUserModel.getId());
-        userModel.remove(toUpdate);
-        userModel.add(updateUserModel);
-        return updateUserModel;
+        int index = users.indexOf(existingUser);
+        users.set(index, updateUser); // Substitui na mesma posição original
+
+        return updateUser;
     }
 
-    public UserMODEL delete(final long id) {
-
-        UserMODEL toDelete = findById(id);
-        userModel.remove(toDelete);
+    public UserModel delete(final long id) {
+        UserModel toDelete = findById(id);
+        users.remove(toDelete);
         return toDelete;
     }
 
-    public UserMODEL findById(final long id) {
-
-        String message = String.format("Não existe usuario com o id %s cadastrado", id);
-        return userModel.stream()
+    public UserModel findById(final long id) {
+        return users.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new UserNotFoundException(message));
+                .orElseThrow(() -> new UserNotFoundException(
+                String.format("Não existe usuário com o id %d cadastrado", id)));
     }
 
-    public List<UserMODEL> findAll() {
-
-        List<UserMODEL> result = null;
-        try {
-            verifyEmptyStorage();
-            result = userModel;
-        } catch (UserNotFoundException e) {
-            System.out.println(e.getMessage());
-            result = new ArrayList<>();
-        }
-        return result;
+    public List<UserModel> findAll() {
+        verifyEmptyStorage();
+        // Retorna uma cópia para proteger a lista original (Encapsulamento)
+        return new ArrayList<>(users);
     }
 
     private void verifyEmptyStorage() {
-
-        if (userModel.isEmpty()) {
-            throw new UserNotFoundException("Nenhum usuario cadastrado!");
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("Nenhum usuário cadastrado!");
         }
     }
 }

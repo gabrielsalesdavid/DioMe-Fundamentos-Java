@@ -1,62 +1,76 @@
-package com.simplificandoIO;
+package com.simplificandoio;
 
+import java.io.BufferedReader; // Import necessário
+import java.io.BufferedWriter; // Import necessário
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileReader;     // Import necessário
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.PrintWriter;    // Import necessário
 import java.util.ArrayList;
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class IOFilePersistence implements IFilePersistence {
 
-    private final String currentDir = System.getProperty("user.dir");
-    private final String filePath = currentDir + "/data/data.txt";
-    private final String fileName;
+    private final String baseDir;
+    private final String fullPath;
 
     public IOFilePersistence(String fileName) {
-        this.fileName = fileName;
-        File file = new File(filePath);
+        // Define o diretório base
+        this.baseDir = System.getProperty("user.dir") + File.separator + "data";
+        // Cria o caminho completo do arquivo de forma segura
+        this.fullPath = baseDir + File.separator + fileName;
+
+        File directory = new File(baseDir);
+        File file = new File(fullPath);
+
         try {
+            // Cria o diretório se não existir
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            // Cria o arquivo se não existir
             if (!file.exists()) {
-                file.getParentFile().mkdirs();
                 file.createNewFile();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public String write(final String data) {
+        // FileWriter com 'true' no construtor ativa o modo APPEND (adicionar ao final)
+        try (FileWriter fw = new FileWriter(fullPath, true); BufferedWriter bw = new BufferedWriter(fw); PrintWriter out = new PrintWriter(bw)) {
 
-        var conten = new StringBuilder();
-
-        try (FileWriter fileWrite = new FileWriter(currentDir + filePath + fileName, true); var bufferedWriter = fileWrite.getBufferedWriter(fileWrite); var printWriter = fileWrite.getPrintWriter(bufferedWriter)) {
-
-            String line;
-
-            do {
-
-                line = fileWrite.readLine();
-                if (line != null) {
-                    conten.append(line).append(System.lineSeparator());
-                }
-            } while (line != null);
+            out.println(data);
 
         } catch (IOException e) {
             e.printStackTrace();
+            return "Erro ao escrever: " + e.getMessage();
         }
-        return null;
+        return "Dados escritos com IO: " + data;
     }
 
     @Override
     public boolean removeContent(final String sentence) {
-        var content = findAll();
-        if (content != null && content.contains(sentence)) {
-            content = content.replace(sentence + System.lineSeparator(), "");
-            clearFile();
-            write(content);
+        List<String> lines = readFileLines();
+        boolean removed = false;
+
+        // Filtra removendo a linha exata (ou que contém a sentença, conforme lógica desejada)
+        List<String> newContent = new ArrayList<>();
+        for (String line : lines) {
+            if (!line.contains(sentence)) {
+                newContent.add(line);
+            } else {
+                removed = true;
+            }
+        }
+
+        if (removed) {
+            rewriteFile(newContent);
             return true;
         }
         return false;
@@ -64,30 +78,34 @@ public class IOFilePersistence implements IFilePersistence {
 
     @Override
     public String replace(final String oldContent, final String newContent) {
-        var content = findAll();
-        var contentListed = new ArrayList<>(Stream.of(content.split(System.lineSeparator())).toList());
-        if (content != null && content.contains(oldContent)) {
-            var index = contentListed.indexOf(oldContent);
-            contentListed.set(index, newContent);
-            clearFile();
-            for (String line : contentListed) {
-                write(line + System.lineSeparator());
+        List<String> lines = readFileLines();
+        boolean replaced = false;
+
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).contains(oldContent)) {
+                // Substitui a linha antiga pela nova (pode usar replace da String se quiser substituição parcial)
+                lines.set(i, lines.get(i).replace(oldContent, newContent));
+                replaced = true;
             }
         }
-        return null;
+
+        if (replaced) {
+            rewriteFile(lines);
+            return "Conteúdo substituído.";
+        }
+        return "Conteúdo não encontrado.";
     }
 
     @Override
     public String findAll() {
-
-        var content = new StringBuilder();
-        try (var reader = new BufferedReader(new FileReader(currentDir + filePath + fileName))) {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fullPath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line).append(System.lineSeparator());
             }
             return content.toString();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -95,39 +113,42 @@ public class IOFilePersistence implements IFilePersistence {
 
     @Override
     public String findBy(final String sentence) {
-        String found;
-        try (var reader = new BufferedReader(new FileReader(currentDir + filePath + fileName))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fullPath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(sentence)) {
                     return line;
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private ArrayList<String> readFileLines() {
-        var lines = new ArrayList<String>();
-        try (var reader = new BufferedReader(new FileReader(currentDir + filePath + fileName))) {
+    // Método auxiliar para ler todas as linhas em uma Lista
+    private List<String> readFileLines() {
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fullPath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return lines;
     }
 
-    private void clearFile() {
+    // Método auxiliar para reescrever o arquivo do zero (usado no remove e replace)
+    private void rewriteFile(List<String> lines) {
+        try (FileWriter fw = new FileWriter(fullPath, false); // false = sobrescrever
+                 BufferedWriter bw = new BufferedWriter(fw); PrintWriter out = new PrintWriter(bw)) {
 
-        try {
-            OutputStream outputStream = new FileOutputStream(new File(currentDir + filePath + fileName));
-            outputStream.close();
-        } catch (Exception e) {
+            for (String line : lines) {
+                out.println(line);
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
